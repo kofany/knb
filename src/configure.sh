@@ -261,6 +261,7 @@ function getarg()
 	    elif [ "$ARG" = "--without-validator" ]; then
 		VALIDATOR=false
 		VALIDSET=true
+		HAVE_IPV6=true
 	    else
 		help  
 	    fi
