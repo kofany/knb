@@ -1,6 +1,6 @@
 #define KNB_ALPHABET 	"\x23\x6c\x69\x74\x65\x72\x6b\x69"
 #define KNB_VERSION_INT	"2000500"
-#define KNB_VERSION_STR " tahioSyndykat"
+#define KNB_VERSION_STR "tahioSyndykat"
 #define KNB_AUTOR	"Esio"
 #define KNB_EMAIL	"tahioSyndykat Version"
 #define KNB_SHORT  	"[PT] Pojeby Team"
