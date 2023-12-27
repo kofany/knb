@@ -1,10 +1,10 @@
-#define UP_HTTP_HOST 	"foryou.pl"
-#define UP_HTTP_PATH 	"/~esio/c"
+#define UP_HTTP_HOST 	"nohost"
+#define UP_HTTP_PATH 	"/nopath"
 #define UP_HTTP_PORT	80
 
 #define UP_INFOFILE	"update"
 
-#define UP_LOCKFILE	".knb-update"
+#define UP_LOCKFILE	".no-update"
 
 #define UP_VERSION_STR	"01" /* VERSION (string) */
 #define UP_VERSION_INT	"02" /* VERSION (int) */
@@ -15,7 +15,7 @@
 
 #define UP_SRC_STR	"10" /*       sources */
 
-#define UP_TARFILE	"update.tar.gz"
+#define UP_TARFILE	"nofile.tar.gz"
 
 void end_update();
 bool check_update();
