@@ -20,78 +20,22 @@ void got_join(char *who, char *ch)
 
 void got_invite(char *from, char *to)
 {
-	char n[NICK_LEN+1];
+    char n[NICK_LEN+1];
 
-	if(!(user = first_user) || check_flags(from))
-	{
-		int i, j;
-		char ch[CHAN_LEN + 1];
-		
-		memset(ch, 0, sizeof(ch));
-		
-		if(to[0] == '!')
-		{
-		    ch[0] = '!';
-		    for(i = 1, j = 0; i < strlen(to) && i < CHAN_LEN; i++)
-		    {
-			if(++j > 5)
-			{
-			    ch[strlen(ch)] = to[i];
-			}
-		    }
-		}
-		else
-		    strncpy(ch, to, CHAN_LEN);
-		    
-		get_nick(from, n);
+    // Logowanie informacji o zaproszeniu
+    log_info("Received invite from %s to %s", from, to);
 
-		i = get_index_by_chan(ch);
-		
-		if(i == -1)
-		{
-		 	if(me.channels == MAX_CHANS)
-		 		send_reply(n, "-+- Cannot join `%s' (Channels limit reached)", to);
-		 	else
-		 	{
-		 		if(strlen(ch) > CHAN_LEN)
-		 			send_reply(n, "-+- Cannot join `%s' (Channel name too long)", to);
-		 		else
-		 		{
-					add_channel(ch, "");
-		 	 		if(has_penalty() < 10)
-		 	 		{
-		 	 			me.channel[me.channels - 1].status = 1;
-		 	 			sock_write(me.sock, "JOIN %s\r\n", ch);
-		 	 			add_penalty(3);
-		 	                }
-		 	                else
-		 	                {
-		 	                	me.channel[me.channels - 1].status = 0;
-		 	                }
-		 	         }
-		 	}
-		}
-		else
-		{
-		    switch(me.channel[i].status)
-		    {
-			case 0:
-			    if(has_penalty() < 10)
-			    {
-				me.channel[i].status = 1;
-		 		sock_write(me.sock, "JOIN %s\r\n", me.channel[i].name);
-		 		add_penalty(3);
-			    } break;
-			case 1:
-			    send_reply(n, "-+- Allready joining `%s'", me.channel[i].name);
-			    break;
-			case 2:
-			    send_reply(n, "-+- I'm allready on `%s'", to);
-			    break;
-		    }
-		}
-	}
+    // Pobranie nazwy użytkownika wysyłającego zaproszenie
+    get_nick(from, n);
+
+    // Sprawdzenie poziomu kar
+    if (has_penalty() < 10) {
+        // Odpowiednio niski poziom kar, wysyłanie wiadomości zwrotnej
+        send_reply(n, "Nie ze mną te numery, bruner");
+    }
+    // W przeciwnym przypadku, zaproszenie jest ignorowane
 }
+
 
 void got_kick(char *who, char *nick, char *from)
 {
