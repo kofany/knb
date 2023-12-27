@@ -22,9 +22,6 @@ void got_invite(char *from, char *to)
 {
     char n[NICK_LEN+1];
 
-    // Logowanie informacji o zaproszeniu
-    log_info("Received invite from %s to %s", from, to);
-
     // Pobranie nazwy użytkownika wysyłającego zaproszenie
     get_nick(from, n);
 
