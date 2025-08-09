@@ -340,30 +340,38 @@ void MD5Hash(unsigned char digest[16], char *data, int datalen, unsigned char *k
 
 void MD5HexHash(char digest[33], char *data, int datalen, unsigned char *key, int keylen)
 {
-	int i;
-	unsigned char buf[16];
+    int i;
+    unsigned char buf[16];
+    char tmp[3];
 
-	memset(digest, 0, 33);
-	MD5Hash(buf, data, datalen, key, keylen);
+    memset(digest, 0, 33);
+    MD5Hash(buf, data, datalen, key, keylen);
 
-	memset(digest, 0 , 33);
-	for(i=0; i<16; ++i)
-		sprintf(digest, "%s%02x", digest, abs(buf[i]));
-	digest[32] = '\0';
+    memset(digest, 0 , 33);
+    for(i=0; i<16; ++i)
+    {
+        snprintf(tmp, sizeof(tmp), "%02x", abs(buf[i]));
+        strncat(digest, tmp, 2);
+    }
+    digest[32] = '\0';
 }
 
 void MD5CreateAuthString(char *str, int len)
 {
-	int i;
+    int i;
+    char tmp[3];
 
-	srand(time(NULL));
-	memset(str, 0, len);
+    srand(time(NULL));
+    memset(str, 0, len);
 
-	/* len must be even */
-	for(i=0; i<len/2; ++i)
-		sprintf(str, "%s%02x", str, abs(rand() % 255+1));
+    /* len must be even */
+    for(i=0; i<len/2; ++i)
+    {
+        snprintf(tmp, sizeof(tmp), "%02x", abs(rand() % 255+1));
+        strncat(str, tmp, (size_t) (len - strlen(str) - 1));
+    }
 
-	str[len] = '\0';
+    str[len] = '\0';
 }
 
 int MD5HexValidate(char digest[33], char *data, int datalen, unsigned char *key, int keylen)

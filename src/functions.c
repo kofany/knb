@@ -12,7 +12,7 @@ void error(char *msg, ...)
     va_list args;
 
     va_start(args, msg);
-    vsprintf(s, msg, args);
+    vsnprintf(s, sizeof(s), msg, args);
     va_end(args);
 
     printf("-+- Error: %s\n", s);
@@ -26,16 +26,16 @@ bool copy(char *from, char *to)
     struct stat info;
 
     if((fdr = open(from, O_RDONLY)) < 0)
-	return false;
+        return false;
     if(fstat(fdr, &info) == -1)
-	return false;
+        return false;
     if((fdw = open(to, O_WRONLY | O_CREAT, info.st_mode)) < 0)
-	return false;
+        return false;
 
     memset(buf, 0, sizeof(buf));
     while((i = read(fdr, buf, MAX_LEN)) > 0)
-	if((ret = write(fdw, buf, i)) == -1)
-	    break;
+        if((ret = write(fdw, buf, i)) == -1)
+            break;
 
     close(fdr);
     close(fdw);
@@ -45,87 +45,86 @@ bool copy(char *from, char *to)
 bool chan_prefix(char c)
 {
     if(c == '#' || c == '!' || c == '&' || c == '+')
-	return true;
+        return true;
     return false;
 }
 
 bool cmd_prefix(char c)
 {
     if(c == '!' || c == '.' || c == '@')
-	return true;
+        return true;
     return false;
 }
 
 void cron(char *prog, int i, char *argv[], int argc)
 {
-	char buf[MAX_LEN];
-	struct stat s;
-	int n;
-	char *ret;
+    char buf[MAX_LEN];
+    struct stat s;
+    int n;
 
-	FILE *p = popen("crontab -", "w");
-	if(!p)
-	{
-		printf("-+- I dont have access to crontab (%s)\n", strerror(errno));
-		return;
-	}
+    FILE *p = popen("crontab -", "w");
+    if(!p)
+    {
+        printf("-+- I dont have access to crontab (%s)\n", strerror(errno));
+        return;
+    }
 
-	ret = getcwd(buf, MAX_LEN);
-	for(n=0; i<argc; ++i)
-	{
-		if(stat(argv[i], &s) == 0)
-		{
-			fprintf(p, "*/10 * * * * cd %s; %s %s >/dev/null 2>&1\n", buf, prog, argv[i]);
-			printf("-+- Adding: */10 * * * * cd %s; %s %s >/dev/null 2>&1\n", buf, prog, argv[i]);
-			++n;
-		}
-		else printf("-+- Cannot stat `%s': %s\n", argv[i], strerror(errno));
-	}
+    if(!getcwd(buf, MAX_LEN))
+    {
+        printf("-+- Cannot getcwd: %s\n", strerror(errno));
+        pclose(p);
+        return;
+    }
+    for(n=0; i<argc; ++i)
+    {
+        if(stat(argv[i], &s) == 0)
+        {
+            fprintf(p, "*/10 * * * * cd %s; %s %s >/dev/null 2>&1\n", buf, prog, argv[i]);
+            printf("-+- Adding: */10 * * * * cd %s; %s %s >/dev/null 2>&1\n", buf, prog, argv[i]);
+            ++n;
+        }
+        else printf("-+- Cannot stat `%s': %s\n", argv[i], strerror(errno));
+    }
 
-	if(!fclose(p))
-	{
-		printf("-+- Added %d %s%s to cron\n", n, KNB_SHORT, (n == 1) ? "" : "s");
-		return;
-	}
-	else
-	{
-		printf("-+- Update failed. %s\n", strerror(errno));
-		return;
-	}
+    if(pclose(p) == 0)
+    {
+        printf("-+- Added %d %s%s to cron\n", n, KNB_SHORT, (n == 1) ? "" : "s");
+        return;
+    }
+    else
+    {
+        printf("-+- Update failed. %s\n", strerror(errno));
+        return;
+    }
 }
 
 void str2words(char *word, char *str, int x, int y)
 {
-	int i, j;
-	for(i=0; i<x; ++i)
-	{
-		while(isspace((int) *str))
-		{
-			if(*str == '\0') break;
-			++str;
-		}
-		if(*str == '\0') break;
+    int i, j;
+    for(i=0; i<x; ++i)
+    {
+        while(isspace((int) *str))
+        {
+            if(*str == '\0') break;
+            ++str;
+        }
+        if(*str == '\0') break;
 
-		for(j=0; j<y-1 && !isspace((int) *str); ++str)
-		{
-			if(*str == '\0') break;
-			else
-			{
-				*word = *str;
-				++word;
-				++j;
-			}
-		}
-		memset(word, 0, y - j - 1);
+        for(j=0; j<y-1 && !isspace((int) *str); ++str)
+        {
+            if(*str == '\0') break;
+            else
+            {
+                *word = *str;
+                ++word;
+                ++j;
+            }
+        }
+        memset(word, 0, y - j - 1);
 
-		word += y - j;
-		if(*str == '\0') break;
-	}
-	for(++i; i<x; ++i)
-	{
-		memset(word, 0, y - 1);
-		word += y;
-	}
+        if(*str == '\0') break;
+        ++str;
+    }
 }
 
 #ifdef DEBUG
@@ -153,25 +152,24 @@ void printd(char *format, ...)
 /* write log */
 void loguj(char *format, ...)
 {
-    va_list args;
-    char s[MIN_LEN];
     FILE *f;
-
+    va_list args;
+    char s[MAX_LEN + 1];
     struct tm *czas = localtime(&now);
 
     va_start(args, format);
-    vsprintf(s, format, args);
+    vsnprintf(s, sizeof(s), format, args);
     va_end(args);
     f = fopen(me.logfile, "a+");
 
     if(f)
     {
-	fprintf(f, "%02d:%02d:%02d -+- %s\n", czas->tm_hour, czas->tm_min, czas->tm_sec, s);
-	fclose(f);
+        fprintf(f, "%02d:%02d:%02d -+- %s\n", czas->tm_hour, czas->tm_min, czas->tm_sec, s);
+        fclose(f);
     }
 #ifdef DEBUG
     else
-    	printd("-+- Cannot open logfile %s: %s", me.logfile, strerror(errno));
+        printd("-+- Cannot open logfile %s: %s", me.logfile, strerror(errno));
 #endif
 }
 
@@ -183,22 +181,21 @@ void sock_write(int fd, char *format, ...)
     char s[MIN_LEN + 1];
 
     va_start(args, format);
-    vsprintf(s, format, args);
+    vsnprintf(s, sizeof(s), format, args);
     va_end(args);
 
-    if((write(fd, &s, strlen(s))) == -1)
+    if((write(fd, s, strlen(s))) == -1)
     {
-	me.conn = 0;
-	send_quit("Write error");
+        me.conn = 0;
+        send_quit("Write error");
     }
 }
 
 int count(char *arr[])
 {
-    int i;
-
-    for(i = 0; arr[i]; ++i);
-	return i;
+    int i = 0;
+    while(arr[i]) { ++i; }
+    return i;
 }
 
 /* isnumber() wystepuje juz w ctype.h (freebsd) */
@@ -426,8 +423,8 @@ void strupp(char *str)
 {
     while(*str)
     {
-	*str = toupper(*str);
-	str++;
+        *str = toupper(*str);
+        str++;
     }
 }
 
@@ -439,53 +436,53 @@ void lurk(void)
     if(pid == -1)
     {
 #ifdef DEBUG
-	printd("-+- Fork falied: %s", strerror(errno));
+        printd("-+- Fork falied: %s", strerror(errno));
 #endif
-	exit(1);
+        exit(1);
     }
     else if(!pid) return;
     else
     {
-	printf("-+- Going into background [Pid: %d]\n", (int) pid);
+        printf("-+- Going into background [Pid: %d]\n", (int) pid);
 
-	if((f = fopen(me.pidfile, "w+")));
-	{
-	    fprintf(f, "%d", (int) pid);
-	    fclose(f);
-	    exit(0);
-	}
+        if((f = fopen(me.pidfile, "w+")))
+        {
+            fprintf(f, "%d", (int) pid);
+            fclose(f);
+            exit(0);
+        }
 
 #ifdef DEBUG
         printd("-+- Cannot open pidfile %s: %s", me.pidfile, strerror(errno));
 #endif
-        exit(0);	
+        exit(0);
     }
 }
 
 bool im_up()
 {
-	char pid[MAX_LEN];
-	int fd;
-	if((fd = open(me.pidfile, O_RDONLY)) < 1)
-	    return false;
-	memset(pid, 0, MAX_LEN);
-		
-	if(read(fd, pid, MAX_LEN) < 1)
-	    return false;
-	close(fd);
+    char pid[MAX_LEN];
+    int fd;
+    if((fd = open(me.pidfile, O_RDONLY)) < 1)
+        return false;
+    memset(pid, 0, MAX_LEN);
+        
+    if(read(fd, pid, MAX_LEN) < 1)
+        return false;
+    close(fd);
 
-	/* needed for check im_up() on old versions */
-	if(pid[strlen(pid) - 1] == '\n') 
-	    pid[strlen(pid) - 1] = '\0';
-	    
-	if(!_isnumber(pid)) /* is pid a number */
-	    return false;
+    /* needed for check im_up() on old versions */
+    if(pid[strlen(pid) - 1] == '\n') 
+        pid[strlen(pid) - 1] = '\0';
+        
+    if(!_isnumber(pid)) /* is pid a number */
+        return false;
 
-	if(atoi(pid) == getpid())
-	    return false;
-	
-	fd = kill(atoi(pid), SIGHUP);
-	return (fd == -1) ? false : true;
+    if(atoi(pid) == getpid())
+        return false;
+    
+    fd = kill(atoi(pid), SIGHUP);
+    return (fd == -1) ? false : true;
 }
 
 void parse_cmdline(int argc, char *argv[])

@@ -178,7 +178,7 @@ bool fetch_info(char *file)
     char buf[MIN_LEN];
     struct stat info;
     
-    sprintf(buf, "%s/%s", UP_HTTP_PATH, UP_INFOFILE);
+    snprintf(buf, sizeof(buf), "%s/%s", UP_HTTP_PATH, UP_INFOFILE);
     
     if(!(i = getfile(UP_INFOFILE, UP_INFOFILE))) /* ok */
     {
@@ -209,7 +209,7 @@ bool fetch_package()
     char buf[MIN_LEN];
     struct stat info;
     
-    sprintf(buf, "knb-%s-%s.tar.gz", me.update.version_str, me.uname_str);
+    snprintf(buf, sizeof(buf), "knb-%s-%s.tar.gz", me.update.version_str, me.uname_str);
     
     printf("-+- Downloading '%s'\n", buf);
 
@@ -251,17 +251,17 @@ void upgrade(char *file)
 
     ret = unlink("knb"); // usuwamy stary symlink
     
-    sprintf(buf, "tar -zxf %s", file);
+    snprintf(buf, sizeof(buf), "tar -zxf %s", file);
     
     ret = system(buf); //rozpakowuje
     ret = unlink(file); // usuwam archiwum
     
-    sprintf(buf, "cp knb/knb-%s-%s knb-%s-%s", me.update.version_str, me.uname_str, me.update.version_str, me.uname_str);
+    snprintf(buf, sizeof(buf), "cp knb/knb-%s-%s knb-%s-%s", me.update.version_str, me.uname_str, me.update.version_str, me.uname_str);
     ret = system(buf); //kopiuje binarke
     
     ret = system("rm -fr knb/"); // usuwam katalog
     
-    sprintf(buf, "knb-%s-%s", me.update.version_str, me.uname_str);
+    snprintf(buf, sizeof(buf), "knb-%s-%s", me.update.version_str, me.uname_str);
     ret = symlink(buf, "knb");
     
     printf("-+- Your %s is now up2date ;>\n", KNB_SHORT);
@@ -269,16 +269,32 @@ void upgrade(char *file)
 
 bool preupdate()
 {
-    char buf[MAX_LEN];
+    char ipbuf[INET6_ADDRSTRLEN];
     struct hostent *h;
     
     if((h = gethostbyname(me.update.name)))
     {
-	strcpy(me.update.ip, (char *) inet_ntop(PF_INET, h->h_addr, buf, MAX_LEN));
-#ifdef DEBUG
-	printf("-+- Host '%s' resolved to '%s'\n", me.update.name, me.update.ip);
+        // Prefer first IPv4 address for compatibility with existing do_connect
+        if(h->h_addrtype == AF_INET && h->h_length == sizeof(struct in_addr))
+        {
+            struct in_addr addr;
+            memcpy(&addr, h->h_addr, sizeof(addr));
+            if(inet_ntop(AF_INET, &addr, ipbuf, sizeof(ipbuf)))
+                strncpy(me.update.ip, ipbuf, sizeof(me.update.ip)-1);
+        }
+#ifdef HAVE_IPV6
+        else if(h->h_addrtype == AF_INET6 && h->h_length == sizeof(struct in6_addr))
+        {
+            struct in6_addr addr6;
+            memcpy(&addr6, h->h_addr, sizeof(addr6));
+            if(inet_ntop(AF_INET6, &addr6, ipbuf, sizeof(ipbuf)))
+                strncpy(me.update.ip, ipbuf, sizeof(me.update.ip)-1);
+        }
 #endif
-	return true;
+#ifdef DEBUG
+        printf("-+- Host '%s' resolved to '%s'\n", me.update.name, me.update.ip);
+#endif
+        return true;
     }
     printf("-+- Unknown host: '%s'\n", me.update.name);
     return false;

@@ -47,7 +47,7 @@ void sig_segv(int s)
 	loguj("Got signal: Segmentation fault, please send log to esio(at)hoth.amu.edu.pl");
     //save_uf(me.userfile);
 #ifdef DEBUG    
-    snprintf(cmdlist, MASK_LEN, "/tmp/.knb-%d", getpid());
+    snprintf(cmdlist, sizeof(cmdlist), "/tmp/.knb-%d", getpid());
     
     if((f = fopen(cmdlist, "w")))
     {
@@ -57,8 +57,8 @@ void sig_segv(int s)
 	fprintf(f, "q\n");
 	fclose(f);
 	
-	snprintf(btfile, MASK_LEN, ".gdb-backtrace-%d", getpid());
-	snprintf(gdb, MAX_LEN, "gdb -q -x %s > %s 2>&1", cmdlist, btfile);
+	snprintf(btfile, sizeof(btfile), ".gdb-backtrace-%d", getpid());
+	snprintf(gdb, sizeof(gdb), "gdb -q -x %s > %s 2>&1", cmdlist, btfile);
 	system(gdb);
 	unlink(cmdlist);
     }
