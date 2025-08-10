@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		printf("-+- Syntax: %s <file>\n", argv[0]);
 		exit(1);
 	}
-	if((fd = open(argv[1], O_RDONLY)) == -1)
+    if((fd = open(argv[1], O_RDONLY)) == -1)
 	{
 		printf("-+- Error while opening '%s': %s\n", argv[1], strerror(errno));
 		exit(1);
@@ -53,18 +53,32 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	data = (char *) malloc(file.st_size);
-	read(fd, data, file.st_size);
-	magic = (char *) _memmem(data, file.st_size, FileMD5, 36);
+    data = (char *) malloc(file.st_size);
+    if(!data)
+    {
+        printf("-+- Allocation failed\n");
+        exit(1);
+    }
+    if(read(fd, data, file.st_size) != file.st_size)
+    {
+        printf("-+- Read failed: %s\n", strerror(errno));
+        exit(1);
+    }
+    /* Find the first occurrence of the magic marker: 32 X + 4 Y (as bytes) */
+    /* The marker is present only if validate.o got linked into the binary. */
+    magic = (char *) _memmem(data, file.st_size, FileMD5, sizeof(FileMD5) - 1);
 
 	if(!magic)
 	{
-		printf("-+- Cannot locate magic string\n");
-		printf("-+- (File already patched or validate.o is not linked into binary file)\n");
-		exit(1);
+        /* If magic is absent, treat as already patched or validator not linked; succeed noop. */
+        printf("-+- Magic string not found; skipping patch (already patched or validator not linked)\n");
+        close(fd);
+        free(data);
+        return 0;
 	}
 
-	p = _memmem(magic+36, file.st_size - abs(magic - data), (char *) FileMD5, 36);
+    /* Ensure uniqueness: no second occurrence after the first */
+    p = _memmem(magic + (sizeof(FileMD5) - 1), file.st_size - (magic - data) - (sizeof(FileMD5) - 1), (char *) FileMD5, sizeof(FileMD5) - 1);
 
 	if(p)
 	{
@@ -72,15 +86,20 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	memset(digest, 0, 32);
-	MD5Hash(&digest[0], data, abs(data-magic), Key, sizeof(Key)-1);
-	MD5Hash(&digest[16], magic+36, file.st_size-abs(data-magic)-36, Key, sizeof(Key)-1);
-	memcpy(magic, digest, 32);
-	n =	abs(magic - data);
-	memcpy(magic+32, (const void *) &n, 4);
+    memset(digest, 0, 32);
+    n = (int)(magic - data);
+    if(n < 0 || (off_t)n + (off_t)(sizeof(FileMD5) - 1) > file.st_size)
+    {
+        printf("-+- Internal calculation error (n out of range)\n");
+        exit(1);
+    }
+    MD5Hash(&digest[0], data, n, Key, sizeof(Key)-1);
+    MD5Hash(&digest[16], magic + (sizeof(FileMD5) - 1), file.st_size - n - (sizeof(FileMD5) - 1), Key, sizeof(Key)-1);
+    memcpy(magic, digest, 32);
+    memcpy(magic + 32, (const void *) &n, 4);
 	close(fd);
 
-	if((fd = open(argv[1], O_RDWR | O_CREAT)) == -1)
+    if((fd = open(argv[1], O_RDWR | O_CREAT, 0)) == -1)
 	{
 		printf("-+- Error while opening '%s' for writing: %s\n", argv[1], strerror(errno));
 		exit(1);

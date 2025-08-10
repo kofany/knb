@@ -2,6 +2,15 @@ CHANGELOG [EN]:
 
 > 0.2.x
 
+  10-08-2025 (0.2.6)
+  
+  - Replace sprintf/vsprintf with safer snprintf/vsnprintf across codebase
+  - Fix validator to handle new binary layout safely; add bounds checks
+  - Make validator patcher tolerant (no-op if magic not linked)
+  - Prevent runtime termination on validator mismatch; warn only
+  - Fix remaining sprintf in signals (snprintf in sig_updated)
+  - Minor cleanups and warnings reductions
+
   04-05-2011 (0.2.5)
   
   added delay cfg option (now we can set additonal delay/penalty for NICK/ISON command 

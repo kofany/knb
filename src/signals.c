@@ -89,7 +89,7 @@ void sig_updated(int s)
     save_uf(me.userfile);
     send_quit("Restarting");
     ret = unlink(me.pidfile);
-    sprintf(buf, "%s %s", me.program, me.conf);
+    snprintf(buf, sizeof(buf), "%s %s", me.program, me.conf);
     ret = system(buf);
     exit(0);    
 }
