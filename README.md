@@ -1,4 +1,4 @@
-[EN] (version tahioSyndykat-1 / 0.2.6)
+[EN]
 
 Few infromations about istallation, configuration n using this.
 
@@ -39,7 +39,7 @@ To make clean do:
 
 n dont care about warnings in linking ;)
 
-When compilation falied, u can allways use packages, which u can find on this page. If binary validator reports "This file is hacked", it's only a warning now and does not stop execution.
+When compilation falied, u can allways use packages, which u can find on this page
 
 For configuration file, there is example under name 'conf' 
 
