@@ -16,7 +16,7 @@ void error(char *msg, ...)
     va_end(args);
 
     printf("-+- Error: %s\n", s);
-    exit(0);
+    exit(1);
 }
 
 bool copy(char *from, char *to)
@@ -147,14 +147,14 @@ void printd(char *format, ...)
     
     if(me.dontfork)
     {
-	time_t now = time(NULL);
+    	time_t now = time(NULL);
 
-	va_start(args, format);
-	vsprintf(s, format, args);
-	va_end(args);
+    	va_start(args, format);
+    	vsprintf(s, format, args);
+    	va_end(args);
 
-	t = localtime(&now);
-	printf("%02d:%02d:%02d -+- %s\n", t->tm_hour, t->tm_min, t->tm_sec, s);
+    	t = localtime(&now);
+    	printf("%02d:%02d:%02d -+- %s\n", t->tm_hour, t->tm_min, t->tm_sec, s);
     }
 }
 #endif
@@ -214,8 +214,8 @@ bool _isnumber(char *str)
     int i;
 
     for(i = 0; i < strlen(str); i++)
-	if(!isdigit((int) str[i]))
-	    return false;
+    	if(!isdigit((int) str[i]))
+    	    return false;
     return true;
 }
 
@@ -328,8 +328,8 @@ int do_connect6(char *server, int port, char *vhost, int noblock)
 
 void ltrim(char *str)
 {
-	unsigned int i = 0, j;
-	unsigned int len = strlen(str) - 1;
+    unsigned int i = 0, j;
+    unsigned int len = strlen(str) - 1;
 
        if(len > 0)
        {
@@ -348,8 +348,8 @@ void ltrim(char *str)
 
 void rtrim(char *str)
 {
-	unsigned int i;
-	unsigned int len = strlen(str);
+    unsigned int i;
+    unsigned int len = strlen(str);
 
         if(len > 0)
         {
@@ -364,58 +364,58 @@ void rtrim(char *str)
 
 void trim(char *str)
 {
- 	ltrim(str);
- 	rtrim(str);
+  	ltrim(str);
+  	rtrim(str);
 }
 
 
 bool isbool(char *str)
 {
-	int i = -1;
+    int i = -1;
 
-	if(_isnumber(str))
-		i = atoi(str);
+    if(_isnumber(str))
+        i = atoi(str);
 
-	if(!i || i == 1) return true;
+    if(!i || i == 1) return true;
 
-	if(!strcasecmp(str, "on") || !strcasecmp(str, "off") || !strcasecmp(str, "true") || !strcasecmp(str, "false")) return true;
+    if(!strcasecmp(str, "on") || !strcasecmp(str, "off") || !strcasecmp(str, "true") || !strcasecmp(str, "false")) return true;
 
         return false;
 }
 
 bool get_bool(char *str)
 {
-	if(_isnumber(str))
-		return !atoi(str) ? false : true;
-	if(!strcasecmp(str, "on") || !strcasecmp(str, "true"))
-		return true;
-	return false;
+    if(_isnumber(str))
+        return !atoi(str) ? false : true;
+    if(!strcasecmp(str, "on") || !strcasecmp(str, "true"))
+        return true;
+    return false;
 }
 
 bool isreply(char *str)
 {
-	int i = -1;
+    int i = -1;
 
-	if(_isnumber(str))
-		i = atoi(str);
+    if(_isnumber(str))
+        i = atoi(str);
 
-	if(!i || i == 1) return true;
+    if(!i || i == 1) return true;
 
-	if(!strcasecmp(str, "on") || !strcasecmp(str, "off") || !strcasecmp(str, "true") || !strcasecmp(str, "false")) return true;
-	if(!strcasecmp(str, "msg") || !strcasecmp(str, "privmsg") || !strcasecmp(str, "message") || !strcasecmp(str, "notice")) return true;
-	if(!strcasecmp(str, "m") || !strcasecmp(str, "n")) return true;
+    if(!strcasecmp(str, "on") || !strcasecmp(str, "off") || !strcasecmp(str, "true") || !strcasecmp(str, "false")) return true;
+    if(!strcasecmp(str, "msg") || !strcasecmp(str, "privmsg") || !strcasecmp(str, "message") || !strcasecmp(str, "notice")) return true;
+    if(!strcasecmp(str, "m") || !strcasecmp(str, "n")) return true;
         return false;
 }
 
 bool get_reply(char *str)
 {
-	if(_isnumber(str))
-		return !atoi(str) ? false : true;
-	if(!strcasecmp(str, "on") || !strcasecmp(str, "true"))
-		return true;
-	if(!strcasecmp(str, "msg") || !strcasecmp(str, "privmsg") || !strcasecmp(str, "message") || !strcasecmp(str, "m")) return true;
+    if(_isnumber(str))
+        return !atoi(str) ? false : true;
+    if(!strcasecmp(str, "on") || !strcasecmp(str, "true"))
+        return true;
+    if(!strcasecmp(str, "msg") || !strcasecmp(str, "privmsg") || !strcasecmp(str, "message") || !strcasecmp(str, "m")) return true;
 
-	return false;
+    return false;
 }
 
 /* string lower case */
@@ -423,8 +423,8 @@ void strlow(char *str)
 {
     while(*str)
     {
-	*str = tolower(*str);
-	str++;
+    	*str = tolower(*str);
+    	str++;
     }
 }
 
@@ -497,100 +497,133 @@ bool im_up()
 
 void parse_cmdline(int argc, char *argv[])
 {
-	int i;
+    int i;
 
-	me.program = argv[0];
+    me.program = argv[0];
 
-	if(argc == 1)
-	{
-		printf("-+- Usage: %s [-v] [-a] [-u] [conf]\n", me.program);
-		exit(1);
-	}
-	
-	for(i = 1; i < argc; ++i)
-	{
-		if(!strcmp(argv[i], "-a"))
-		{
-			if((i + 1) < argc)
-				cron(argv[0], i+1, argv, argc);
-			else
-				printf("-+- No config files specified\n");
-			exit(1);
-		}
-		if(!strcmp(argv[i], "-u"))
-		{
-		    if(update())
-			exit(0);
-		    exit(1);	
-		}
-		else if(!strcmp(argv[i], "-v"))
-			exit(0);
-		else if(i == (argc - 1))
-		{
-			if(!load_cfg(argv[i]))
-				exit(2);
-			me.conf = argv[i];
-			
-			if(im_up() == true)
-			{
-			    printf("-+- I'm allready up, terminating\n");
-			    exit(5);
-			}
-			if(!load_uf(me.userfile))
-			    printf("-+- Userlist not found, running in owner creation mode\n");
-			else
-			{
-			    if(!(user = first_user))
-				printf("-+- Hosts not found, running in owner creation mode\n");
-			}
-		}
-		else
-		{
-			printf("-+- Unknown option: '%s'\n", argv[i]);
-			exit(4);
-		}
-	}
+    /* support help and default config */
+    if(argc == 1)
+    {
+        /* Try default 'conf' if present */
+        if(access("conf", R_OK) == 0)
+        {
+            if(!load_cfg("conf"))
+                exit(2);
+            me.conf = "conf";
+
+            if(im_up() == true)
+            {
+                printf("-+- I'm allready up, terminating\n");
+                exit(5);
+            }
+            if(!load_uf(me.userfile))
+                printf("-+- Userlist not found, running in owner creation mode\n");
+            else
+            {
+                if(!(user = first_user))
+                    printf("-+- Hosts not found, running in owner creation mode\n");
+            }
+            return;
+        }
+        printf("-+- Usage: %s [-v|--version] [-h|--help] [-a] [-u] [conf]\n", me.program);
+        exit(1);
+    }
+    
+    for(i = 1; i < argc; ++i)
+    {
+        if(!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
+        {
+            printf("-+- Usage: %s [-v|--version] [-h|--help] [-a] [-u] [conf]\n", me.program);
+            exit(0);
+        }
+        if(!strcmp(argv[i], "--version"))
+        {
+            /* banner already printed by propaganda() */
+            exit(0);
+        }
+        if(!strcmp(argv[i], "-a"))
+        {
+            if((i + 1) < argc)
+                cron(argv[0], i+1, argv, argc);
+            else
+                printf("-+- No config files specified\n");
+            exit(1);
+        }
+        if(!strcmp(argv[i], "-u"))
+        {
+            if(update())
+                exit(0);
+            exit(1);
+        }
+        else if(!strcmp(argv[i], "-v"))
+            exit(0);
+        else if(i == (argc - 1))
+        {
+            if(!load_cfg(argv[i]))
+                exit(2);
+            me.conf = argv[i];
+            
+            if(im_up() == true)
+            {
+                printf("-+- I'm allready up, terminating\n");
+                exit(5);
+            }
+            if(!load_uf(me.userfile))
+                printf("-+- Userlist not found, running in owner creation mode\n");
+            else
+            {
+                if(!(user = first_user))
+                printf("-+- Hosts not found, running in owner creation mode\n");
+            }
+        }
+        else
+        {
+            printf("-+- Unknown option: '%s'\n", argv[i]);
+            printf("-+- Usage: %s [-v|--version] [-h|--help] [-a] [-u] [conf]\n", me.program);
+            exit(4);
+        }
+    }
 }
 
 void mem_strncpy(char *dest, const char *src, int n)
 {
-	dest = (char *) malloc(n + 1);
-	strncpy(dest, src, n);
-	dest[n-1] = '\0';
+    dest = (char *) malloc(n + 1);
+    strncpy(dest, src, n);
+    dest[n-1] = '\0';
 }
 
 void mem_strcpy(char *dest, const char *src)
 {
-	if(src)
-	{
-		dest = (char *) malloc(strlen(src) + 1);
-		strcpy(dest, src);
-	}
-	else
-	{
-		dest = (char *) malloc(1);
-		*dest = '\0';
-	}
+    if(src)
+    {
+        dest = (char *) malloc(strlen(src) + 1);
+        strcpy(dest, src);
+    }
+    else
+    {
+        dest = (char *) malloc(1);
+        *dest = '\0';
+    }
 }
 
 void mem_strcat(char *dest, const char *src)
 {
-	dest = (char *) realloc(dest, strlen(src) + strlen(dest) + 1);
-	strcat(dest, src);
+    dest = (char *) realloc(dest, strlen(src) + strlen(dest) + 1);
+    strcat(dest, src);
 }
 
 bool isrealstr(const char *str)
 {
-	if(!str)
-		return false;
+    if(!str)
+        return false;
 
-	while(*str)
-	{
-		if(*str < 33 || *str > 126)
-			return false;
-		++str;
-	}
-	return true;
+    while(*str)
+    {
+        if(*str < 33 || *str > 126)
+            return false;
+        ++str;
+    }
+    return true;
 }
 
 void connect_bot()
@@ -599,50 +632,50 @@ void connect_bot()
     
     if(me.last_server == -1 && me.reconnect)
     {
-	me.reconnect = false;
+    	me.reconnect = false;
 #ifdef DEBUG
-	printd("Connecting to %s[%s]:%d", me.custom_server.name, me.custom_server.ip, me.custom_server.port);
+    	printd("Connecting to %s[%s]:%d", me.custom_server.name, me.custom_server.ip, me.custom_server.port);
 #endif
-	if(strlen(me.logfile))
-	    loguj("Connecting to %s[%s]:%d", me.custom_server.name, me.custom_server.ip, me.custom_server.port);
+    	if(strlen(me.logfile))
+    	    loguj("Connecting to %s[%s]:%d", me.custom_server.name, me.custom_server.ip, me.custom_server.port);
 #ifdef HAVE_IPV6	
-	if(me.custom_server.type == 6)
-	    if((me.sock = do_connect6(me.custom_server.ip, me.custom_server.port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
-		me.sock = 0;	
+    	if(me.custom_server.type == 6)
+    	    if((me.sock = do_connect6(me.custom_server.ip, me.custom_server.port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
+    		me.sock = 0;	
 #endif
-	if(me.custom_server.type == 4)
-	    if((me.sock = do_connect(me.custom_server.ip, me.custom_server.port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
-		me.sock = 0;	
+    	if(me.custom_server.type == 4)
+    	    if((me.sock = do_connect(me.custom_server.ip, me.custom_server.port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
+    		me.sock = 0; 
     }
     else
     {
-	int i;
-	
-	if(me.reconnect && me.last_server != -1)
-	{
-	    i = me.last_server;
-	    me.reconnect = false;
-	}
-	else
-	{
-    	    i = rand() % me.servers;
-	    me.last_server = i;
-	}
+    	int i;
+    	
+    	if(me.reconnect && me.last_server != -1)
+    	{
+    	    i = me.last_server;
+    	    me.reconnect = false;
+    	}
+    	else
+    	{
+        	    i = rand() % me.servers;
+    	    me.last_server = i;
+    	}
     
 #ifdef DEBUG
-	printd("Connecting to %s[%s]:%d", me.server[i].name, me.server[i].ip, me.server[i].port);
+    	printd("Connecting to %s[%s]:%d", me.server[i].name, me.server[i].ip, me.server[i].port);
 #endif
-	if(strlen(me.logfile))
-	    loguj("Connecting to %s[%s]:%d", me.server[i].name, me.server[i].ip, me.server[i].port);
+    	if(strlen(me.logfile))
+    	    loguj("Connecting to %s[%s]:%d", me.server[i].name, me.server[i].ip, me.server[i].port);
 
 #ifdef HAVE_IPV6	
-	if(me.server[i].type == 6)
-	    if((me.sock = do_connect6(me.server[i].ip, me.server[i].port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
-		me.sock = 0;	
+    	if(me.server[i].type == 6)
+    	    if((me.sock = do_connect6(me.server[i].ip, me.server[i].port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
+    		me.sock = 0;	
 #endif
-	if(me.server[i].type == 4)
-	    if((me.sock = do_connect(me.server[i].ip, me.server[i].port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
-		me.sock = 0;
+    	if(me.server[i].type == 4)
+    	    if((me.sock = do_connect(me.server[i].ip, me.server[i].port, strlen(me.vhost.ip) ? me.vhost.ip : "", -1)) < 0)
+    		me.sock = 0;
     }
     me.next_reconnect = now + CONNECT_TIMEOUT;
 }
@@ -674,10 +707,10 @@ void precache()
     strlow(name.sysname); /* tolower */
     
     if(!strncmp(name.sysname, "cygwin", 6))
-	strcpy(me.uname_str, "cygwin");
+    	strcpy(me.uname_str, "cygwin");
     else
-	strcpy(me.uname_str, name.sysname);
-	
+    	strcpy(me.uname_str, name.sysname);
+    	
     me.uname_int = get_index_by_uname(me.uname_str);
 }
 
@@ -687,18 +720,18 @@ void precache_expand()
     
     if(strlen(me.logfile))
     {
-	FILE *f;
-	char *dupa = ctime(&now);
-	dupa[strlen(dupa) - 1] = '\0'; 
+    	FILE *f;
+    	char *dupa = ctime(&now);
+    	dupa[strlen(dupa) - 1] = '\0'; 
 
-	if((f = fopen(me.logfile, "w+")))
-	{
-	    fclose(f);
-	    loguj("Logfile created: %s", dupa);
-	}
+    	if((f = fopen(me.logfile, "w+")))
+    	{
+    	    fclose(f);
+    	    loguj("Logfile created: %s", dupa);
+    	}
 #ifdef DEBUG
-	else
-	    printd("Cannot create logfile %s: %s", me.logfile, strerror(errno)); 
+    	else
+    	    printd("Cannot create logfile %s: %s", me.logfile, strerror(errno)); 
 #endif
     }
     strcpy(me.host, "0.0.0.0");
@@ -707,7 +740,7 @@ void precache_expand()
 bool check_ident_prefix(char c)
 {
     if(c == '~' || c == '-' || c == '+' || c == '=' || c == '^')
-	return true;
+    return true;
     
     return false;
 }
@@ -717,11 +750,11 @@ void penalty_reset()
     int i, j;
     
     for(i = 0, j = 0; i < me.letters; i++)    
-	if(me.letter[i].status == 0) j++;
+    if(me.letter[i].status == 0) j++;
 
     if(!j)
     {
-	me.next_penalty_reset = now + PENALTY_RESET_TIME; /* 24 h*/
-	add_penalty(PENALTY_RESET_ADD); /* 10 secs */
+    me.next_penalty_reset = now + PENALTY_RESET_TIME; /* 24 h*/
+    add_penalty(PENALTY_RESET_ADD); /* 10 secs */
     }
 }
