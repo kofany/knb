@@ -8,7 +8,7 @@
 
 CC = gcc
 OUT = knb-tahioSyndykat-linux
-CFLAGS = -Wall -DDEBUG
+CFLAGS = -march=native -pipe -O2 -DHAVE_IPV6 -DHAVE_VALIDATOR -Wall -DDEBUG
 LFLAGS = 
 
 .c.o:
