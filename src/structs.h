@@ -152,13 +152,12 @@ struct knb_user
 	time_t next_notice;
 	time_t next_penalty_reset;
 	
-	/* ison && send reponse check */
+    /* ison && send reponse check */
 	bool ison;
 	bool send;
-	
-#ifdef DEBUG
-	bool dontfork;
-#endif
+    
+    /* present for compile-time consistency; used only in DEBUG builds */
+    bool dontfork;
 	/* alphabet edition */
 	int alphabet;
 	/* anty flood detectors */

@@ -374,10 +374,15 @@ else
     LFLAGS=""
     GCCVER=`echo $GCC | sed 's/[.]*//g'`
 
-    if [ $GCCVER -ge 423 ]; then
-        CFLAGS="-march=native -pipe -O2"
+    # macOS/clang: avoid unsupported -march values
+    if [ "$UNAME" = "darwin" ]; then
+        CFLAGS="-pipe -O2"
     else
-	CFLAGS="-march=$MACHINE -pipe -O2"
+        if [ $GCCVER -ge 423 ]; then
+            CFLAGS="-march=native -pipe -O2"
+        else
+        	CFLAGS="-march=$MACHINE -pipe -O2"
+        fi
     fi
 fi
 

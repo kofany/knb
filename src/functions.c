@@ -670,6 +670,9 @@ void precache()
     srand(now);
     signal_handling();    
     
+#ifdef DEBUG
+    me.dontfork = 0;
+#endif
     uname(&name);
     strlow(name.sysname); /* tolower */
     

@@ -372,23 +372,20 @@ bool set_variable(char *var, char *args, char *error)
             	me.public_reply = get_bool(args);
                 return true;
 	}
-	if(!strcmp(var, CFG_ALPHABET))
-	{
-	    if(!strlen(args))
-	    {
-        	if(!(i = strlen(args)))
-        		return err_return(-102, error, var, NULL);
-        	if(i > 5)
-                	return err_return(0, error, var, args);
-                if(!isbool(args))
-                	return err_return(-104, error, var, args);
-		if(me.alphabet != -1)
-                	return err_return(-103, error, var, args);
+    if(!strcmp(var, CFG_ALPHABET))
+    {
+        if(!(i = strlen(args)))
+            return err_return(-102, error, var, NULL);
+        if(i > 5)
+            return err_return(0, error, var, args);
+        if(!isbool(args))
+            return err_return(-104, error, var, args);
+        if(me.alphabet != -1)
+            return err_return(-103, error, var, args);
 
-            	me.alphabet = get_bool(args);
-		return true;
-	    }
-	}
+        me.alphabet = get_bool(args);
+        return true;
+    }
 	if(!strcmp(var, CFG_DELAY))
 	{
 	    if(!(i = strlen(args)))
@@ -410,20 +407,14 @@ bool set_variable(char *var, char *args, char *error)
 #ifdef DEBUG
 	if(!strcmp(var, CFG_DONTFORK))
 	{
-	    if(!strlen(args))
-	    {
-        	if(!(i = strlen(args)))
-        		return err_return(-102, error, var, NULL);
-        	if(i > 5)
-                	return err_return(0, error, var, args);
-                if(!isbool(args))
-                	return err_return(-104, error, var, args);
-		if(me.dontfork != -1)
-                	return err_return(-103, error, var, args);
-
-            	me.dontfork = get_bool(args);
-                return true;
-	    }
+        if(!(i = strlen(args)))
+            return err_return(-102, error, var, NULL);
+        if(i > 5)
+            return err_return(0, error, var, args);
+        if(!isbool(args))
+            return err_return(-104, error, var, args);
+        me.dontfork = get_bool(args);
+        return true;
 	}
 #endif	
 	return err_return(666, error, var, NULL); // unknown variable
