@@ -328,7 +328,7 @@ function do_debug()
 {
     make_echo
     FLAGS="-DDEBUG"
-    CFLAGS="-Wall"
+    CFLAGS="$CFLAGS -Wall"
     makefile_up
     makefile_deb
 }
