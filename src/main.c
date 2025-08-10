@@ -24,44 +24,40 @@ int main(int argc, char *argv[])
     parse_cmdline(argc, argv);
     precache_expand();
 
-#ifndef DEBUG
-    lurk();
-#else
     if(!me.dontfork)
-	lurk();
-#endif
+        lurk();
 
     loop()
     {
-	now = time(NULL);
-	
-	if(now >= me.next_reconnect)
-	{
-	    preconnect();
-	    connect_bot();
-	}	
-	
-	loop()
-	{
-	    now = time(NULL);
-	    check_input();
+    	now = time(NULL);
+    	
+    	if(now >= me.next_reconnect)
+    	{
+    	    preconnect();
+    	    connect_bot();
+    	}	
+    	
+    	loop()
+    	{
+    	    now = time(NULL);
+    	    check_input();
 //	    me.catch = true;
-	    if(me.conn < 1)
-		break;
-	    if(me.conn == 3)
-	    {
-		if(now >= me.next_chan_check)
-		{
-		    me.next_chan_check = now + CHAN_CHECK_DELAY + (rand() % 61);
-		    channels();
-		}
-		if(now >= me.next_penalty_reset)
-		{
-		    penalty_reset();
-		}
-		work();
-	    }    
-	}
+    	    if(me.conn < 1)
+    		break;
+    	    if(me.conn == 3)
+    	    {
+    		if(now >= me.next_chan_check)
+    		{
+    		    me.next_chan_check = now + CHAN_CHECK_DELAY + (rand() % 61);
+    		    channels();
+    		}
+    		if(now >= me.next_penalty_reset)
+    		{
+    		    penalty_reset();
+    		}
+    		work();
+    	    }    
+    	}
     }
     return 0;
 }
