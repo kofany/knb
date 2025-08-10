@@ -101,29 +101,39 @@ void cron(char *prog, int i, char *argv[], int argc)
 void str2words(char *word, char *str, int x, int y)
 {
     int i, j;
-    for(i=0; i<x; ++i)
+    for(i = 0; i < x; ++i)
     {
-        while(isspace((int) *str))
+        char *dst = word + (i * y);
+
+        /* skip leading whitespace */
+        while(isspace((int)*str))
         {
-            if(*str == '\0') break;
+            if(*str == '\0')
+                break;
             ++str;
         }
-        if(*str == '\0') break;
 
-        for(j=0; j<y-1 && !isspace((int) *str); ++str)
+        if(*str == '\0')
         {
-            if(*str == '\0') break;
-            else
-            {
-                *word = *str;
-                ++word;
-                ++j;
-            }
+            /* no more tokens */
+            if(y > 0) dst[0] = '\0';
+            break;
         }
-        memset(word, 0, y - j - 1);
 
-        if(*str == '\0') break;
-        ++str;
+        /* copy token into dst up to y-1 chars */
+        for(j = 0; j < y - 1 && *str != '\0' && !isspace((int)*str); ++j, ++str)
+        {
+            dst[j] = *str;
+        }
+        dst[j] = '\0';
+
+        /* advance source to next potential token boundary */
+        while(*str != '\0' && !isspace((int)*str))
+            ++str;
+        /* the next loop iteration will skip any spaces */
+
+        if(*str == '\0')
+            break;
     }
 }
 
