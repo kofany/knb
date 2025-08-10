@@ -23,7 +23,7 @@ void send_notice(char *to, char *format, ...)
     char s[MIN_LEN];
 
     va_start(args, format);
-    vsprintf(s, format, args);
+    vsnprintf(s, sizeof(s), format, args);
     va_end(args);
 
     sock_write(me.sock, "NOTICE %s :%s\r\n", to, s);
@@ -37,7 +37,7 @@ void send_privmsg(char *to, char *format, ...)
     char s[MIN_LEN];
 
     va_start(args, format);
-    vsprintf(s, format, args);
+    vsnprintf(s, sizeof(s), format, args);
     va_end(args);
 
     sock_write(me.sock, "PRIVMSG %s :%s\r\n", to, s);
@@ -52,7 +52,7 @@ void send_reply(char *to, char *format, ...)
     char s[MIN_LEN];
 
     va_start(args, format);
-    vsprintf(s, format, args);
+    vsnprintf(s, sizeof(s), format, args);
     va_end(args);
 
     if(me.reply_type)
@@ -73,7 +73,7 @@ void send_quit(char *msg, ...)
 	char s[MIN_LEN];
 
     	va_start(args,msg);
-    	vsprintf(s, msg, args);
+    	vsnprintf(s, sizeof(s), msg, args);
     	va_end(args);
 
     	if(me.conn == 3) sock_write(me.sock, "QUIT :%s\r\n", s);
@@ -100,11 +100,11 @@ void get_nick(char *who, char *n)
 {
     char *p = who;
     if(who[0] == ':')
-	who++;
+        who++;
     while(*p != '!' && *p)
-	p++;
+        p++;
     *p = 0;
-    strcpy(n, who);
+    snprintf(n, NICK_LEN, "%s", who);
 }
 
 void get_nuh(char *who, char *n, char *u, char *h)
@@ -113,14 +113,13 @@ void get_nuh(char *who, char *n, char *u, char *h)
     char *at = strchr(who, '@');
 
     if(who[0] == ':')
-	who++;
+        who++;
     
     strncpy(n, who, (int) abs(who - ex));
-    strncpy(u, ex+1, (int) abs(at - ex) - 1);
-    strcpy(h, at+1);
-    
     n[(int) abs(who - ex)] = 0;
+    strncpy(u, ex+1, (int) abs(at - ex) - 1);
     u[(int) abs(at - ex) - 1] = 0;
+    snprintf(h, MASK_LEN, "%s", at+1);
 }
     
 
@@ -142,20 +141,20 @@ bool extendhost(char *host, unsigned int len, char *buf)
         if(!ex)
         {
             if(at == host)
-		strcpy(buf, "*!*");
+		snprintf(buf, len, "*!*");
             else
-		strcpy(buf, "*!");
-            strcat(buf, host);
+		snprintf(buf, len, "*!");
+            strncat(buf, host, len - strlen(buf) - 1);
         }
         else if(ex == host)
         {
-            strcpy(buf, "*");
-            strcat(buf, host);
+            snprintf(buf, len, "*");
+            strncat(buf, host, len - strlen(buf) - 1);
         }
         else
-		strcpy(buf, host);
+		snprintf(buf, len, "%s", host);
         if(*(at + 1) == '\0')
-		strcat(buf, "*");
+		strncat(buf, "*", len - strlen(buf) - 1);
         return true;
     }
     else
@@ -164,13 +163,10 @@ bool extendhost(char *host, unsigned int len, char *buf)
 		return false;
         if(strchr(host, '.') || strchr(host, ':'))
         {
-            strcpy(buf, "*!*@");
-            strcat(buf, host);
+            snprintf(buf, len, "*!*@%s", host);
             return true;
         }
-        strcpy(buf, "*!");
-        strcat(buf, host);
-        strcat(buf, "@*");
+        snprintf(buf, len, "*!%s@*", host);
         return true;
     }
 }
@@ -237,23 +233,26 @@ void irc(void)
 
     loop()
     {
-	j = -1;
+        j = -1;
 
-	if(strlen(me.buf))
-	    for(i = 0; me.buf[i]; i++)
-		if(me.buf[i] == '\n')
-		{
-		    j = i;
-		    break;
-		}
+        if(strlen(me.buf))
+            for(i = 0; me.buf[i]; i++)
+                if(me.buf[i] == '\n')
+                {
+                    j = i;
+                    break;
+                }
 
-	if(j == -1)
-	    return;
+        if(j == -1)
+            return;
 
-	memset(b, 0, sizeof(b));
-	strncpy(b, me.buf, j - 1);
-	irc_msg(b);
-	strcpy(me.buf, (char *) &me.buf[j + 1]);
+        memset(b, 0, sizeof(b));
+        if(j - 1 > 0)
+            strncpy(b, me.buf, j - 1);
+        else
+            b[0] = '\0';
+        irc_msg(b);
+        memmove(me.buf, (char *) &me.buf[j + 1], strlen((char *) &me.buf[j + 1]) + 1);
     }
 }
 

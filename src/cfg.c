@@ -5,42 +5,42 @@ bool err_return(int number, char *error, char *var, char *param)
         switch(number)
         {
         	/* too long letters/nicks */
-        	case 0: sprintf(error, "argument too long for '%s' (%s)", var, param); break;
-        	case 1: sprintf(error, "%dst argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
-        	case 2: sprintf(error, "%dnd argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
-        	case 3: sprintf(error, "%drd argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
+        	case 0: snprintf(error, MAX_LEN, "argument too long for '%s' (%s)", var, param); break;
+        	case 1: snprintf(error, MAX_LEN, "%dst argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
+        	case 2: snprintf(error, MAX_LEN, "%dnd argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
+        	case 3: snprintf(error, MAX_LEN, "%drd argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
         	case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11: case 12: case 13: case 14:
         	case 15: case 16: case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25:
 		case 26: case 27: case 28: case 29: case 30: case 31: case 32: case 33: case 34: case 35: case 36:
         	case 37: case 38: case 39:
-        	case 40: sprintf(error, "%dth argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
+        	case 40: snprintf(error, MAX_LEN, "%dth argument too long for '%s' (%d chars)", number, var, (int) strlen(param)); break;
 		/* overrange */
-        	case -1: sprintf(error, "overrange in argument for '%s' (%s)", var, param); break;
-        	case -2: sprintf(error, "overrange in %dst argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
-        	case -3: sprintf(error, "overrange in %dnd argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
-        	case -4: sprintf(error, "overrange in %drd argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
+        	case -1: snprintf(error, MAX_LEN, "overrange in argument for '%s' (%s)", var, param); break;
+        	case -2: snprintf(error, MAX_LEN, "overrange in %dst argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
+        	case -3: snprintf(error, MAX_LEN, "overrange in %dnd argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
+        	case -4: snprintf(error, MAX_LEN, "overrange in %drd argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
         	case -5:
-        	case -6: sprintf(error, "overrange in %dth argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
+        	case -6: snprintf(error, MAX_LEN, "overrange in %dth argument for '%s' (%s)", (number - 1) * (-1), var, param); break;
 
 		/* others */
-        	case -101: sprintf(error, "list is full for '%s' (%s)", var, param); break;
-        	case -102: sprintf(error, "too few arguments for '%s'", var); break;
-        	case -103: sprintf(error, "duplicate entries for '%s' (%s)", var, param); break;
-        	case -104: sprintf(error, "conflicting types in argument for '%s' (%s)", var, param); break;
-                case -105: sprintf(error, "conflicting types in %dst argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
-                case -106: sprintf(error, "conflicting types in %dnd argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
-                case -107: sprintf(error, "conflicting types in %drd argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
+        	case -101: snprintf(error, MAX_LEN, "list is full for '%s' (%s)", var, param); break;
+        	case -102: snprintf(error, MAX_LEN, "too few arguments for '%s'", var); break;
+        	case -103: snprintf(error, MAX_LEN, "duplicate entries for '%s' (%s)", var, param); break;
+        	case -104: snprintf(error, MAX_LEN, "conflicting types in argument for '%s' (%s)", var, param); break;
+                case -105: snprintf(error, MAX_LEN, "conflicting types in %dst argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
+                case -106: snprintf(error, MAX_LEN, "conflicting types in %dnd argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
+                case -107: snprintf(error, MAX_LEN, "conflicting types in %drd argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
                 case -108:
-                case -109: sprintf(error, "conflicting types in %dth argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
-                case -110: sprintf(error, "unknown host for '%s' (%s)", var, param); break;
-                case -111: sprintf(error, "unknown prefix for '%s' (%s)", var, param); break;
-                case -112: sprintf(error, "incorrect mask for '%s' (%s)", var, param); break;
-                case -113: sprintf(error, "nick too long for '%s' (%s)", var, param); break;
-                case -114: sprintf(error, "ident too long for '%s' (%s)", var, param); break;
-                case -115: sprintf(error, "host too long for '%s' (%s)", var, param); break;
-		case -116: sprintf(error, "sysname mismatch for '%s' (%s)", var, param); break;
+                case -109: snprintf(error, MAX_LEN, "conflicting types in %dth argument for '%s' (%s)", ((number * (-1)) - 104), var, param); break;
+                case -110: snprintf(error, MAX_LEN, "unknown host for '%s' (%s)", var, param); break;
+                case -111: snprintf(error, MAX_LEN, "unknown prefix for '%s' (%s)", var, param); break;
+                case -112: snprintf(error, MAX_LEN, "incorrect mask for '%s' (%s)", var, param); break;
+                case -113: snprintf(error, MAX_LEN, "nick too long for '%s' (%s)", var, param); break;
+                case -114: snprintf(error, MAX_LEN, "ident too long for '%s' (%s)", var, param); break;
+                case -115: snprintf(error, MAX_LEN, "host too long for '%s' (%s)", var, param); break;
+		case -116: snprintf(error, MAX_LEN, "sysname mismatch for '%s' (%s)", var, param); break;
 
-                default: sprintf(error, "no such variable '%s'", var);
+                default: snprintf(error, MAX_LEN, "no such variable '%s'", var);
         }
  	return false;
 }

@@ -50,13 +50,13 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	    if(check_ident_prefix(u[0])) /* zamieniamy prefix identa na '?' */
 		u[0] = '?';
 		
-	    sprintf(buf, "*!%s@%s", u, h);
-	    
-	    if(strlen(buf) > MASK_LEN)
-	    {
-		send_reply(target, "-+- Mask too long (%d chars)", strlen(buf));
-		return;
-	    }
+	                snprintf(buf, sizeof(buf), "*!%s@%s", u, h);
+            
+            if(strlen(buf) > MASK_LEN)
+            {
+                send_reply(target, "-+- Mask too long (%d chars)", (int)strlen(buf));
+                return;
+            }
 	    if(check_flags(buf))
 	    {
 		send_reply(target, "-+- Host '%s' allready exists", buf);
@@ -141,12 +141,12 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	    if(check_ident_prefix(u[0])) /* zamieniamy prefix identa na '?' */
 		u[0] = '?';
 
-	    sprintf(buf, "*!%s@%s", u, h);
-	    if(!check_flags(buf))
-	    {
-		send_reply(target, "-+- Host '%s' not found", buf);
-		return; 
-	    }
+	            snprintf(buf, sizeof(buf), "*!%s@%s", u, h);
+        if(!check_flags(buf))
+        {
+            send_reply(target, "-+- Host '%s' not found", buf);
+            return; 
+        }
 	    get_nuh(buf, tn, tu, th);
 	}
 	else
@@ -256,9 +256,9 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	{
 	    add_channel(arg[0], strlen(arg[1]) ? arg[1] : "");
 	    if(strlen(arg[1]))
-		sprintf(buf, "-+- Channel '%s' added with key '%s'", arg[0], arg[1]);
+		snprintf(buf, sizeof(buf), "-+- Channel '%s' added with key '%s'", arg[0], arg[1]);
 	    else	
-		sprintf(buf, "-+- Channel '%s' added without key", arg[0]);
+		snprintf(buf, sizeof(buf), "-+- Channel '%s' added without key", arg[0]);
 		
 	    send_reply(target, "%s", buf);
 	    sock_write(me.sock, "JOIN %s %s\r\n", arg[0], arg[1]);
@@ -450,58 +450,58 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	sec = rest;
 
 	if(day && hour && min && sec)
-	    sprintf(buf, "Uptime: %d day%s, %d hour%s, %d min%s, %d sec%s",
+	    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d hour%s, %d min%s, %d sec%s",
 			day, (day == 1) ? "" : "s", hour, (hour == 1) ? "" : "s", min,
 			(min == 1) ? "" : "s", sec, (sec == 1) ? "" : "s");
 	if(day && hour && min && !sec)
-		    sprintf(buf, "Uptime: %d day%s, %d hour%s, %d min%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d hour%s, %d min%s",
 			day, (day == 1) ? "" : "s", hour, (hour == 1) ? "" : "s", min,
 			(min == 1) ? "" : "s");
 	if(day && hour && !min && sec)
-		    sprintf(buf, "Uptime: %d day%s, %d hour%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d hour%s, %d sec%s",
 			day, (day == 1) ? "" : "s", hour, (hour == 1) ? "" : "s",
 			sec, (sec == 1) ? "" : "s");
 	if(day && hour && !min && !sec)
-		    sprintf(buf, "Uptime: %d day%s, %d hour%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d hour%s",
 			day, (day == 1) ? "" : "s", hour, (hour == 1) ? "" : "s");
 	if(day && !hour && min && sec)
-		    sprintf(buf, "Uptime: %d day%s, %d min%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d min%s, %d sec%s",
 			day, (day == 1) ? "" : "s", min,
 			(min == 1) ? "" : "s", sec, (sec == 1) ? "" : "s");
 	if(day && !hour && min && !sec)
-		    sprintf(buf, "Uptime: %d day%s, %d min%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d min%s",
 			day, (day == 1) ? "" : "s", min,
 			(min == 1) ? "" : "s");
 	if(day && !hour && !min && sec)
-		    sprintf(buf, "Uptime: %d day%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s, %d sec%s",
 			day, (day == 1) ? "" : "s",
 			sec, (sec == 1) ? "" : "s");
 	if(day && !hour && !min && !sec)
-		    sprintf(buf, "Uptime: %d day%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d day%s",
 			day, (day == 1) ? "" : "s");
 	if(!day && hour && min && sec)
-		    sprintf(buf, "Uptime: %d hour%s, %d min%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d hour%s, %d min%s, %d sec%s",
 			 hour, (hour == 1) ? "" : "s", min,
 			(min == 1) ? "" : "s", sec, (sec == 1) ? "" : "s");
 	if(!day && hour && min && !sec)
-		    sprintf(buf, "Uptime: %d hour%s, %d min%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d hour%s, %d min%s",
 			 hour, (hour == 1) ? "" : "s",
 			 sec, (sec == 1) ? "" : "s");
 	if(!day && hour && !min && sec)
-		    sprintf(buf, "Uptime: %d hour%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d hour%s, %d sec%s",
 			hour, (hour == 1) ? "" : "s",
 			sec, (sec == 1) ? "" : "s");
 	if(!day && hour && !min && !sec)
-		    sprintf(buf, "Uptime: %d hour%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d hour%s",
 			hour, (hour == 1) ? "" : "s");
 	if(!day && !hour && min && sec)
-		    sprintf(buf, "Uptime: %d min%s, %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d min%s, %d sec%s",
 			 min, (min == 1) ? "" : "s", sec, (sec == 1) ? "" : "s");
 	if(!day && !hour && min && !sec)
-		    sprintf(buf, "Uptime: %d min%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d min%s",
 			min, (min == 1) ? "" : "s");
 	if(!day && !hour && !min && sec)
-		    sprintf(buf, "Uptime: %d sec%s",
+		    snprintf(buf, sizeof(buf), "Uptime: %d sec%s",
 			sec, (sec == 1) ? "" : "s");
 
     	send_reply(target, "-+- %s", buf);
@@ -528,7 +528,7 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
     if(!strcasecmp(cmd, "backup"))
     {
 	char b[CHAN_LEN + 2];
-	sprintf(b, "~%s", me.userfile); 
+	snprintf(b, sizeof(b), "~%s", me.userfile); 
 	
 	if(save_uf(b))
 	    send_reply(target, "-+- Userfile backuped to file '%s'", b);
@@ -668,7 +668,7 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	save_uf(me.userfile);
 	send_quit("Restarting: %s", me.reason);
 	unlink(me.pidfile);
-	sprintf(buf, "%s %s", me.program, me.conf);
+	snprintf(buf, sizeof(buf), "%s %s", me.program, me.conf);
 	int i = system(buf);
 	exit(0);    
     }
@@ -905,7 +905,7 @@ void got_cmd(char *who, char *to, char *cmd, char *args)
 	int i;
 	char b[CHAN_LEN+2];
 	
-	sprintf(b, "~%s", me.userfile);
+	snprintf(b, sizeof(b), "~%s", me.userfile);
 	
 	if(!save_uf(b))
 	{
