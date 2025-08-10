@@ -1,0 +1,8 @@
+17:02:23 -+- Logfile created: Sun Aug 10 17:02:23 2025
+17:02:23 -+- Connecting to poznan.irc.pl[150.254.65.52]:6667
+17:02:23 -+- Connection with server estabilished
+17:02:40 -+- Connection in progress
+17:02:41 -+- Got disconnect: 'Closing Link: Knb[root@91.121.226.219] (Too many host connections (global))'
+17:02:53 -+- Connecting to warszawa.irc.pl[150.254.65.52]:6667
+17:02:53 -+- Connection with server estabilished
+17:02:53 -+- Got disconnected: 'Knb!root@0.0.0.0' (Read error)
