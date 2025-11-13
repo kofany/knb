@@ -1,71 +1,23 @@
-[EN] (version tahioSyndykat-1 / 0.2.6)
+Keep Nick Bot (KNB)
+====================
 
-Few infromations about istallation, configuration n using this.
+This project now uses a Markdown README. Please open README.md for the full documentation, including:
 
-To compile u only need to:
-(
-% cd knb/src
-% ./configure 
-(
-    * to delete old files founded during compilation do:
-    % make clean 
-)
-% ./configure
-% make (and choose your destiny :)) 
-    * dynamic (make dynamic) (prefered for most systems)
-    * static  (make static)
-    * debug   (make debug)
+- Project overview and feature list
+- Installation and build instructions
+- Configuration reference and command guide
+- Links to the full technical documentation in docs/
 
-To make a package do:
-(
-    % cd knb/src
-    % ./configure
-    % make release 
-)
+Quick start (summary):
 
-To make a src package do:
-(
-    % cd knb/src
-    % ./configure 
-    % make src
-)
+    cd src
+    ./configure
+    make dynamic
+    cd ..
+    cp cfg-examples/conf-ipv4 mybot.conf
+    ./knb mybot.conf
 
-To make clean do:
-(
-    % cd knb/src
-    % ./configure 
-    % make clean
-)
+Example configuration files are available in cfg-examples/.
+Scripts for watchdog/cron integration are available in scripts/.
 
-n dont care about warnings in linking ;)
-
-When compilation falied, u can allways use packages, which u can find on this page. If binary validator reports "This file is hacked", it's only a warning now and does not stop execution.
-
-For configuration file, there is example under name 'conf' 
-
-Therein are described all available options
-
-To add 1st mask/user u should:
-
-> msg nick !new 
-
-or on a channel where he is:
-> !new 
-
-then bot will add mask, which u gave
-(
-	in mask u can use chars `*', `?', i `#'
-	* = replace any sequence of chars
-	? = replace exactly one char
-	# = replace exactly one number
-)
-
-Commands:
-
-command should begin with char: `.' , `!' or `@'
-
-more info in !help
-
-{When u find in this README some erros or miss chars contact with me (my english is basic)} 
-
--- Esio
+For detailed information, refer to README.md and the documentation set in docs/.
